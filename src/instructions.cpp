@@ -85,7 +85,7 @@ void Chip8::Execute(const uint16_t instr) {
             // draw(vx, vy, n)
             Draw(x, y, n);
             break;
-        case 0xE:
+        case 0xE: {
             uint8_t key = registers[x];
             switch (nn) {
                 case 0x9E:
@@ -100,6 +100,7 @@ void Chip8::Execute(const uint16_t instr) {
                     break;
             }
             break;
+        }
         case 0xF:
             Case0xF(x, nn);
             break;

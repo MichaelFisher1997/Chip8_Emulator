@@ -18,7 +18,7 @@ public:
     uint8_t delayTimer;
     uint8_t soundTimer;
     uint8_t keypad[0xF];
-    uint8_t display[WIDTH * HEIGHT];
+    uint32_t display[WIDTH * HEIGHT];
     int debug_num;
 
     Chip8();

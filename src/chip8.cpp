@@ -57,7 +57,7 @@ void Chip8::LoadROM(char const* filename) {
 bool Chip8::RunNext() {
     // Creates the opcode
     const uint16_t opcode = (memory[pc] << 8) | memory[pc+1];
-    std::cout << "Instr: " << hex(opcode) << std::endl;
+    // std::cout << "Instr: " << hex(opcode) << std::endl;
 
     // Increment the pc prior to execution
     pc += 2;
