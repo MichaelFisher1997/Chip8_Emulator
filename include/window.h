@@ -8,6 +8,7 @@ public:
     ~Window();
     void Update(uint32_t* buffer, int pitch);
     bool ProcessInput(uint8_t* keys);
+    uint8_t GetKeyReleased();
 
 private:
     SDL_Window* win;

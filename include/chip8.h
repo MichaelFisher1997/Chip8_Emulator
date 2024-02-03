@@ -27,8 +27,8 @@ public:
 
 private:
     void Execute(const uint16_t instr);
-    void Case0x8(uint8_t x, uint8_t y, uint8_t n);
-    void Case0xF(uint8_t x, uint8_t n);
+    void Case0x8000(uint8_t x, uint8_t y, uint8_t n);
+    void Case0xF000(uint8_t x, uint8_t n);
     void Draw(uint8_t x, uint8_t y, uint8_t height);
     void GetKey(uint8_t x);
 };

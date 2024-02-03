@@ -2,6 +2,7 @@
 #include <string.h>
 #include <iomanip> // for rand()
 //temp
+#include <bitset>
 
 void Chip8::Execute(const uint16_t instr) {
     const uint16_t nnn = instr & 0xFFF;
@@ -10,8 +11,8 @@ void Chip8::Execute(const uint16_t instr) {
     const uint8_t x = (instr & 0xF00) >> 8;
     const uint8_t y = (instr & 0xF0) >> 4;
 
-    switch ((instr & 0xF000) >> 12) {
-        case 0x0:
+    switch (instr & 0xF000) {
+        case 0x0000:
             switch (nn) {
                 case 0xE0:
                     // disp_clear(). Sets all the bits in display to 0
@@ -19,73 +20,72 @@ void Chip8::Execute(const uint16_t instr) {
                     break;
                 case 0xEE:
                     // RET. Returns from a subroutine. Note: pc is overriden here
-                    --sp;
-                    pc = stack[sp];
+                    pc = stack[--sp];
                     break;
             }
             break;
-        case 0x1:
+        case 0x1000:
             // pc = nnn
             pc = nnn;
             break;
-        case 0x2:
+        case 0x2000:
             // Call subroutine. A function call. 
             // NOTE: pc already is + 2, so when it returns, it is already at the next, which is good
             stack[sp++] = pc;
             pc = nnn;
             break;
-        case 0x3:
+        case 0x3000:
             // if vx == nn, skip next instr.
+            // Since its already +2 prior to execute(), to skip next, I add 2 more
             if (registers[x] == nn)
-                // Since its already +2 prior to execute(), to skip next, I add 2 more
                 pc += 2;
             break;
-        case 0x4:
+        case 0x4000:
             // if xv != nn, skip next instr.
             if (registers[x] != nn)
                 pc += 2;
             break;
-        case 0x5:
+        case 0x5000:
             // if vx == vy, skip next instr.
             if (registers[x] == registers[y])
                 pc += 2;
             break;
-        case 0x6:
+        case 0x6000:
             // vx == nn
             registers[x] = nn;
             break;
-        case 0x7:
+        case 0x7000:
             // vx += nn
             registers[x] += nn;
             break;
-        case 0x8:
-            Case0x8(x, y, n);
+        case 0x8000:
+            Case0x8000(x, y, n);
             break;
-        case 0x9:
+        case 0x9000:
             // if vx != vy, skip next instr.
             if (registers[x] != registers[y]) 
                 pc += 2;
             break;
-        case 0xA:
+        case 0xA000:
             // I = nnn
             I = nnn;
             break;
-        case 0xB:
+        case 0xB000:
             // pc = nnn + v0
             pc = registers[0] + nnn;
             break;
-        case 0xC: {
+        case 0xC000: {
             // vx = rand() & nn
             // casts rand to u8
             uint8_t rng = rand();
             registers[x] = rng & nn;
             break;
         }
-        case 0xD:
+        case 0xD000:
             // draw(vx, vy, n)
             Draw(x, y, n);
             break;
-        case 0xE: {
+        case 0xE000: {
             uint8_t key = registers[x];
             switch (nn) {
                 case 0x9E:
@@ -101,15 +101,15 @@ void Chip8::Execute(const uint16_t instr) {
             }
             break;
         }
-        case 0xF:
-            Case0xF(x, nn);
+        case 0xF000:
+            Case0xF000(x, nn);
             break;
         default:
             std::cout << "Error: unknown instr: " << hex(instr) << std::endl;
     }
 }
 
-void Chip8::Case0x8(uint8_t x, uint8_t y, uint8_t n) {
+void Chip8::Case0x8000(uint8_t x, uint8_t y, uint8_t n) {
     switch (n) {
         case 0x0:
             // vx = vy
@@ -118,52 +118,63 @@ void Chip8::Case0x8(uint8_t x, uint8_t y, uint8_t n) {
         case 0x1:
             // vx != vy
             registers[x] |= registers[y];
+            registers[0xF] = 0;
             break;
         case 0x2:
             // vx &= vy
             registers[x] &= registers[y];
+            registers[0xF] = 0;
             break;
         case 0x3:
             // vx ^= vy
             registers[x] ^= registers[y];
+            registers[0xF] = 0;
             break;
         case 0x4: {
             // vx += vy, set vf if overflow
-            const uint16_t sum = registers[x] + registers[y];
+            uint16_t sum = registers[x]+registers[y];
+            registers[x] += registers[y];
             registers[0xF] = (sum > 0xFF)? 1 : 0;
-            registers[x] = sum & 0xFF;
+            // registers[0xF] = sum >> 8;
             break;
         }
-        case 0x5:
+        case 0x5: {
             // vx -= vy, set vf if NOT underflow
-            registers[0xF] = (registers[x] > registers[y])? 1 : 0;
+            uint8_t orig = registers[x];
             registers[x] -= registers[y];
+            registers[0xF] = (registers[x] > orig)? 0 : 1;
+            // registers[0xF] = diff <= 255;
             break;
-        case 0x6:
+        }
+        case 0x6: {
             // vx >>= 1. VF set to the value of the least sig. bit of vx before shift
             // if (!quirks.contains("ShiftVx")) // TODO
                 registers[x] = registers[y];
-            registers[0xF] = registers[x] & 0x1;
+            uint8_t f = registers[x] & 0x1;
             registers[x] >>= 1;
+            registers[0xF] = f;
             break;
+        }
         case 0x7:
             // vx = vy - vx, set vf if NOT underflow
-            registers[0xF] = (registers[y] > registers[x])? 1 : 0;
             registers[x] = registers[y] - registers[x];
+            registers[0xF] = (registers[x] > registers[y])? 0 : 1;
             break;
-        case 0xE:
+        case 0xE: {
             // vx = vy <<= 1. VF set to the value of the most sig. bit of vx before shift
             // if (!quirks.contains("ShiftVx")) // TODO
                 registers[x] = registers[y];
-            registers[0xF] = registers[x] >> 7;
+            uint8_t f = registers[x] >> 7;
             registers[x] <<= 1;
+            registers[0xF] = f;
             break;
+        }
         default:
             std::cout << "Error: unknown instr: 0x8___" << std::endl;
     }
 }
 
-void Chip8::Case0xF(uint8_t x, uint8_t nn) {
+void Chip8::Case0xF000(uint8_t x, uint8_t nn) {
     switch (nn) {
         case 0x07:
             // vx = get_delay(). sets vx to the value of delay timer
@@ -196,7 +207,7 @@ void Chip8::Case0xF(uint8_t x, uint8_t nn) {
             // *(I+1) = BCD(2); // the tens digit at location I+1,
             // *(I+2) = BCD(1); // and the ones digit at location I+2.
             memory[I] = registers[x] /100; // hundreth place
-            memory[I+1] = (registers[x]%100) /10; // tens-place
+            memory[I+1] = (registers[x]/10) %10; // tens-place
             memory[I+2] = (registers[x]%10); //ones-place
             break;
         case 0x55:
@@ -216,21 +227,22 @@ void Chip8::Case0xF(uint8_t x, uint8_t nn) {
     }
 }
 
+
 void Chip8::Draw(uint8_t x, uint8_t y, uint8_t height) {
     // pre-sets vf. If any bit is flipped, vf will be set 1.
     registers[0xF] = 0;
+    uint8_t xOrigin = registers[x] & WIDTH  - 1;
+    uint8_t yOrigin = registers[y] & HEIGHT - 1;
+    uint8_t xPos = 0, yPos = 0;
     for (int h = 0; h < height; h++) {
         // Drawing starts at I, goes down row
         uint8_t spriteByte = memory[I + h];
-        uint8_t xPos = registers[x];
-        uint8_t yPos = registers[y] + h;
+        yPos = yOrigin + h;
         // width of 8 bytes
-        for (auto _ : {0,1,2,3,4,5,6,7}) {
-            // x and y can wrap around the screen
-            xPos %= WIDTH;
-            yPos %= HEIGHT;
+        for (int b = 0; b < 8; b++) {
+            xPos = xOrigin + b;
             // Receives the most sig. bit, then shifts it right later, to make this easier
-            uint8_t bit = (spriteByte & 0b1000'0000) >> 7;
+            uint8_t bit = spriteByte >> 7;
             int index = yPos*WIDTH + xPos;
 
             // Checks if a screen bit was flipped, for vf
@@ -242,10 +254,35 @@ void Chip8::Draw(uint8_t x, uint8_t y, uint8_t height) {
 
             // aforementioned shift for the next bit
             spriteByte <<= 1;
-            xPos++;
         }
     }
 }
+
+// void Chip8::Draw(uint8_t x, uint8_t y, uint8_t height) {
+//     registers[0xF] = 0;
+//     auto xOrigin = registers[x] & WIDTH  - 1;
+//     auto yOrigin = registers[y] & HEIGHT - 1;
+//     auto xPos = 0, yPos = 0;
+
+//     for (auto h = 0; h < height; ++h) {
+//         yPos = yOrigin + h;
+//         if (yPos >= HEIGHT) break;
+
+//         auto spriteByte = memory[I + h];
+        
+//         for (auto b = 0; b < 8; ++b) {
+//             xPos = xOrigin + b;
+//             if (xPos >= WIDTH) break;
+
+//             if (!((spriteByte >> (7 - b)) & 0x1)) continue;
+            
+//             auto index = yPos * WIDTH + xPos;
+
+//             if (display[index]) registers[0xF] = 1;
+//             display[index] ^= 1;
+//         }
+//     }
+// }
 
 // Either sets vx or repeats the instruction
 void Chip8::GetKey(uint8_t x) {
