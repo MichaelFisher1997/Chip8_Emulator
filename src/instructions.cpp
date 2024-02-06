@@ -13,7 +13,7 @@ void Chip8::Execute(const uint16_t instr) {
 
     switch (instr & 0xF000) {
         case 0x0000:
-            switch (nn) {
+            switch (nnn) {
                 case 0xE0:
                     // disp_clear(). Sets all the bits in display to 0
                     memset(display, 0, sizeof(display));
@@ -47,6 +47,7 @@ void Chip8::Execute(const uint16_t instr) {
             break;
         case 0x5000:
             // if vx == vy, skip next instr.
+            // NOTE: make sure to check the final '0', ensure its 0 (n?)
             if (registers[x] == registers[y])
                 pc += 2;
             break;
@@ -63,6 +64,7 @@ void Chip8::Execute(const uint16_t instr) {
             break;
         case 0x9000:
             // if vx != vy, skip next instr.
+            // NOTE: make sure to check the final '0', ensure its 0 (n?)
             if (registers[x] != registers[y]) 
                 pc += 2;
             break;
@@ -170,7 +172,7 @@ void Chip8::Case0x8000(uint8_t x, uint8_t y, uint8_t n) {
             break;
         }
         default:
-            std::cout << "Error: unknown instr: 0x8___" << std::endl;
+            std::cout << "Error: unknown instr: 0x8" << std::hex << (int) x << std::hex << (int) y << std::hex << (int) n << std::endl;
     }
 }
 
@@ -223,11 +225,11 @@ void Chip8::Case0xF000(uint8_t x, uint8_t nn) {
             }
             break;
         default:
-            std::cout << "Error: unknown instr: 0xF___" << std::endl;
+            std::cout << "Error: unknown instr: 0xF" << std::hex << (int) x << std::hex << (int) nn << std::endl;
     }
 }
 
-
+/*
 void Chip8::Draw(uint8_t x, uint8_t y, uint8_t height) {
     // pre-sets vf. If any bit is flipped, vf will be set 1.
     registers[0xF] = 0;
@@ -256,68 +258,70 @@ void Chip8::Draw(uint8_t x, uint8_t y, uint8_t height) {
             spriteByte <<= 1;
         }
     }
-}
+}*/
 
-// void Chip8::Draw(uint8_t x, uint8_t y, uint8_t height) {
-//     registers[0xF] = 0;
-//     auto xOrigin = registers[x] & WIDTH  - 1;
-//     auto yOrigin = registers[y] & HEIGHT - 1;
-//     auto xPos = 0, yPos = 0;
+void Chip8::Draw(uint8_t x, uint8_t y, uint8_t height) {
+    // pre-sets vf. If any bit is flipped, vf will be set 1.
+    registers[0xF] = 0;
+    auto xOrigin = registers[x] & WIDTH  - 1;
+    auto yOrigin = registers[y] & HEIGHT - 1;
+    auto xPos = 0, yPos = 0;
 
-//     for (auto h = 0; h < height; ++h) {
-//         yPos = yOrigin + h;
-//         if (yPos >= HEIGHT) break;
+    for (auto h = 0; h < height; ++h) {
+        yPos = yOrigin + h;
+        if (yPos >= HEIGHT) break;
 
-//         auto spriteByte = memory[I + h];
+        auto spriteByte = memory[I + h];
         
-//         for (auto b = 0; b < 8; ++b) {
-//             xPos = xOrigin + b;
-//             if (xPos >= WIDTH) break;
+        for (auto b = 0; b < 8; ++b) {
+            xPos = xOrigin + b;
+            if (xPos >= WIDTH) break;
 
-//             if (!((spriteByte >> (7 - b)) & 0x1)) continue;
+            if (!((spriteByte >> (7 - b)) & 0x1)) continue;
             
-//             auto index = yPos * WIDTH + xPos;
+            auto index = yPos * WIDTH + xPos;
 
-//             if (display[index]) registers[0xF] = 1;
-//             display[index] ^= 1;
-//         }
-//     }
-// }
+            if (display[index]) registers[0xF] = 1;
+            display[index] ^= 1;
+        }
+    }
+}
 
 // Either sets vx or repeats the instruction
 void Chip8::GetKey(uint8_t x) {
-    if (keypad[0x0])
-        registers[x] = 0x0;
-    else if (keypad[0x1])
-        registers[x] = 0x1;
-    else if (keypad[0x2])
-        registers[x] = 0x2;
-    else if (keypad[0x3])
-        registers[x] = 0x3;
-    else if (keypad[0x4])
-        registers[x] = 0x4;
-    else if (keypad[0x5])
-        registers[x] = 0x5;
-    else if (keypad[0x6])
-        registers[x] = 0x6;
-    else if (keypad[0x7])
-        registers[x] = 0x7;
-    else if (keypad[0x8])
-        registers[x] = 0x8;
-    else if (keypad[0x9])
-        registers[x] = 0x9;
-    else if (keypad[0xA])
-        registers[x] = 0xA;
-    else if (keypad[0xB])
-        registers[x] = 0xB;
-    else if (keypad[0xC])
-        registers[x] = 0xC;
-    else if (keypad[0xD])
-        registers[x] = 0xD;
-    else if (keypad[0xE])
-        registers[x] = 0xE;
-    else if (keypad[0xF])
-        registers[x] = 0xF;
-    else
+    if (is_released) {
+        if (released_key == 0x0)
+            registers[x] = 0x0;
+        else if (released_key == 0x1)
+            registers[x] = 0x1;
+        else if (released_key == 0x2)
+            registers[x] = 0x2;
+        else if (released_key == 0x3)
+            registers[x] = 0x3;
+        else if (released_key == 0x4)
+            registers[x] = 0x4;
+        else if (released_key == 0x5)
+            registers[x] = 0x5;
+        else if (released_key == 0x6)
+            registers[x] = 0x6;
+        else if (released_key == 0x7)
+            registers[x] = 0x7;
+        else if (released_key == 0x8)
+            registers[x] = 0x8;
+        else if (released_key == 0x9)
+            registers[x] = 0x9;
+        else if (released_key == 0xA)
+            registers[x] = 0xA;
+        else if (released_key == 0xB)
+            registers[x] = 0xB;
+        else if (released_key == 0xC)
+            registers[x] = 0xC;
+        else if (released_key == 0xD)
+            registers[x] = 0xD;
+        else if (released_key == 0xE)
+            registers[x] = 0xE;
+        else if (released_key == 0xF)
+            registers[x] = 0xF;
+    } else
         pc -= 2;
 }

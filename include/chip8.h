@@ -7,19 +7,21 @@
 #define hex(x) "0x" << std::hex << std::setfill('0') << std::setw(4) << (int) x
 const unsigned int START_ADRESS = 0x200;
 
+extern bool is_released;
+extern uint8_t released_key;
+
 class Chip8 {
 public:
-    uint8_t registers[16];
-    uint8_t memory[0xFFF];
-    uint16_t I;
-    uint16_t pc;
-    uint16_t stack[16];
-    uint8_t sp; // possibly can use a vector instead?
-    uint8_t delayTimer;
-    uint8_t soundTimer;
-    uint8_t keypad[0xF];
-    uint32_t display[WIDTH * HEIGHT];
-    int debug_num;
+    uint8_t registers[16]{};
+    uint8_t memory[0xFFF]{};
+    uint16_t I{};
+    uint16_t pc{};
+    uint16_t stack[16]{};
+    uint8_t sp{}; // possibly can use a vector instead?
+    uint8_t delayTimer{};
+    uint8_t soundTimer{};
+    uint8_t keypad[0xF]{};
+    uint32_t display[WIDTH * HEIGHT]{};
 
     Chip8();
     void LoadROM(char const* filename);

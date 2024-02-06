@@ -24,7 +24,6 @@ uint8_t fontset[80] = {
 
 Chip8::Chip8() {
     pc = START_ADRESS;
-    sp = 0;
 
     // In order to make `rand()` make new numbers
     srand((unsigned) time(0));
@@ -57,7 +56,7 @@ void Chip8::LoadROM(char const* filename) {
 bool Chip8::RunNext() {
     // Creates the opcode
     const uint16_t opcode = (memory[pc] << 8) | memory[pc+1];
-    // std::cout << "Instr: " << hex(opcode) << std::endl;
+    std::cout << "Instr: " << hex(opcode) << std::endl;
 
     // Increment the pc prior to execution
     pc += 2;
