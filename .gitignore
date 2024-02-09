@@ -32,3 +32,5 @@
 *.app
 
 chip8
+
+build
