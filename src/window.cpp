@@ -2,11 +2,12 @@
 
 Window::Window(char const* title, int width, int height) {
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
+        // printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
         exit(1);
     }
     win = SDL_CreateWindow(title, 0, 0, width, height, SDL_WINDOW_SHOWN);
     renderer = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED);
+    SDL_SetWindowPosition(win, 50, 50);
 }
 
 Window::~Window() {
