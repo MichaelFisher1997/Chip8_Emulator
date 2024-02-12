@@ -1,4 +1,6 @@
 #include "window.h"
+#include <SDL2/SDL_ttf.h>
+TTF_Font* font = NULL;
 
 Window::Window(char const* title, int width, int height) {
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -8,9 +10,15 @@ Window::Window(char const* title, int width, int height) {
     win = SDL_CreateWindow(title, 0, 0, width, height, SDL_WINDOW_SHOWN);
     renderer = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED);
     SDL_SetWindowPosition(win, 50, 50);
+    if (TTF_Init() == -1) {
+        exit(1);
+    }
+    font = TTF_OpenFont("Sans.ttf", 24);
 }
 
 Window::~Window() {
+    TTF_CloseFont(font);
+    TTF_Quit();
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(win);
     SDL_Quit();
@@ -21,15 +29,31 @@ void Window::Update(uint32_t* buffer) {
     SDL_RenderClear(renderer);
 
     // Draw pixels based on the buffer
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    for (int y = 0; y < 32; ++y) {
-        for (int x = 0; x < 64; ++x) {
-            if (buffer[y * 64 + x] == 1) {
-                SDL_Rect pixelRect = {x * 10, y * 10, 10, 10};
-                SDL_RenderFillRect(renderer, &pixelRect);
-            }
-        }
-    }
+    // SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    // for (int y = 0; y < 32; ++y) {
+    //     for (int x = 0; x < 64; ++x) {
+    //         if (buffer[y * 64 + x] == 1) {
+    //             SDL_Rect pixelRect = {x * 10, y * 10, 10, 10};
+    //             SDL_RenderFillRect(renderer, &pixelRect);
+    //         }
+    //     }
+    // }
+    SDL_Color White = {255, 255, 255};
+    
+    SDL_Surface* surfaceMessage = TTF_RenderText_Solid(font, "Hello", White);
+    SDL_Texture* Message = SDL_CreateTextureFromSurface(renderer, surfaceMessage);
+
+    SDL_Rect Message_rect; //create a rect
+    Message_rect.x = 0;  //controls the rect's x coordinate 
+    Message_rect.y = 0; // controls the rect's y coordinte
+    Message_rect.w = 100; // controls the width of the rect
+    Message_rect.h = 100; // controls the height of the rect
+    // OR
+    // SDL_Rect Message_rect = {0, 0, 100, 100};
+    SDL_RenderCopy(renderer, Message, NULL, &Message_rect);
+    SDL_FreeSurface(surfaceMessage);
+    SDL_DestroyTexture(Message);
+
 
     // Update the screen
     SDL_RenderPresent(renderer);
