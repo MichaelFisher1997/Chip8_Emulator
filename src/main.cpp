@@ -25,8 +25,6 @@ int main(int argc, char** argv) {
     while (!quit) {
 
         if (on_menu) {
-            exit(1);
-            /*
             menuInput keypress = window.MenuInput();
             if (keypress == 4)
                 quit = true;
@@ -37,7 +35,6 @@ int main(int argc, char** argv) {
                 rom.append(".ch8");
                 emulator.LoadROM(rom.c_str());
             }
-            */
         } else {
             auto currentTime = std::chrono::high_resolution_clock::now();
             float dt = std::chrono::duration<float, std::chrono::milliseconds::period> (currentTime - lastCycleTime).count();
