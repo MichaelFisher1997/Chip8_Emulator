@@ -13,26 +13,22 @@ add_executable(chip8 ${SOURCES})
 # Include directories
 include_directories(include)
 
-if (UNIX AND NOT APPLE)
-    # Find SDL2
-    find_package(SDL2 REQUIRED)
-    include_directories(${SDL2_INCLUDE_DIRS})
-    target_link_libraries(chip8 ${SDL2_LIBRARIES})
-    message(STATUS "SDL2_INCLUDE_DIRS: ${SDL2_INCLUDE_DIRS}")
-    message(STATUS "SDL2_LIBRARIES: ${SDL2_LIBRARIES}")
-
-    # Find SDL2_TTF
-    find_package(SDL2_ttf REQUIRED)
-    include_directories(${SDL2_TTF_INCLUDE_DIRS})
-    target_link_libraries(chip8 ${SDL2_TTF_LIBRARIES})
-
-    # Print SDL2_ttf variables
-    message(STATUS "SDL2_TTF_INCLUDE_DIRS: ${SDL2_ttf_INCLUDE_DIRS}")
-    message(STATUS "SDL2_TTF_LIBRARIES: ${SDL2_ttf_LIBRARIES}")
-else (WIN32)
-    set(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH}" "SDL_DOWNLOADS")
-    find_package(SDL2 REQUIRED)
-
-    include_directories(${SDL2_INCLUDE_DIRS})
-    target_link_libraries(chip8 SDL2::SDL2main SDL2::SDL2)
+if (WIN32)
+    set(SDL2_PATH "libs/SDL")
+    set(SDL2_ttf_PATH "libs/SDL_TTF")
 endif()
+
+# Find SDL2
+find_package(SDL2 REQUIRED)
+# fetch content /external project add
+include_directories(${SDL2_INCLUDE_DIRS})
+target_link_libraries(chip8 ${SDL2_LIBRARIES})
+
+# Find SDL2_TTF
+find_package(SDL2_ttf REQUIRED)
+include_directories(${SDL2_TTF_INCLUDE_DIRS})
+target_link_libraries(chip8 ${SDL2_TTF_LIBRARIES})
+
+# Print SDL2_ttf variables
+message(STATUS "SDL2_TTF_INCLUDE_DIRS: ${SDL2_ttf_INCLUDE_DIRS}")
+message(STATUS "SDL2_TTF_LIBRARIES: ${SDL2_ttf_LIBRARIES}")
