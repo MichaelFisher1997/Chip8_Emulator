@@ -25,16 +25,17 @@ int main(int argc, char** argv) {
     while (!quit) {
 
         if (on_menu) {
-            menuInput keypress = window.MenuInput();
-            if (keypress == 4)
-                quit = true;
-            on_menu = window.UpdateMenu(emulator.display, keypress);
-            if (!on_menu) {
-                std::string rom = "games/";
-                rom.append(window.games[window.selected]);
-                rom.append(".ch8");
-                emulator.LoadROM(rom.c_str());
-            }
+            exit(1);
+            // menuInput keypress = window.MenuInput();
+            // if (keypress == 4)
+            //     quit = true;
+            // on_menu = window.UpdateMenu(emulator.display, keypress);
+            // if (!on_menu) {
+            //     std::string rom = "games/";
+            //     rom.append(window.games[window.selected]);
+            //     rom.append(".ch8");
+            //     emulator.LoadROM(rom.c_str());
+            // }
         } else {
             auto currentTime = std::chrono::high_resolution_clock::now();
             float dt = std::chrono::duration<float, std::chrono::milliseconds::period> (currentTime - lastCycleTime).count();
