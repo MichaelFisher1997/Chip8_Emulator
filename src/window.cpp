@@ -22,6 +22,7 @@ Window::Window(char const* title, int width, int height) {
     font = TTF_OpenFont("Sans.ttf", 24);
 
     // Get files from 'games'
+    // TODO: if games/ not found, simply make text: Error: 'games' folder not found
     const fs::path dir = "games/";
     const std::string extention = ".ch8";
     std::vector fileList (fs::directory_iterator(dir), {}); //change to C convention
@@ -63,7 +64,7 @@ bool Window::UpdateMenu(uint32_t* buffer, int keypress) {
         height = -10;
     } else if (selected > games.size()-10) {
         // bottom
-        height = (games.size()-10)*-25;
+        height = (games.size()-10)*-24;
     } else {
         // mid
         height = (selected-4)*-25;
