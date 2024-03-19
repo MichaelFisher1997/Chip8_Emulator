@@ -1,4 +1,5 @@
 #include <chrono>
+#include <string>
 #include "chip8.h"
 #include "window.h"
 
@@ -6,11 +7,14 @@ bool is_released{};
 uint8_t released_key{};
 
 int main(int argc, char** argv) {
+    std::cout << "test" << std::endl;
+    /*
     const char* file = argc > 1? argv[1] : NULL;
     int scale = argc > 2? std::stoi(argv[2]) : 10;
     int delay = argc > 3? std::stoi(argv[3]) : 2;
 
     Window window("CHIP-8 Emulator", WIDTH * scale, HEIGHT * scale);
+    std::cout << "test" << std::endl;
 
     Chip8 emulator;
 
@@ -25,17 +29,16 @@ int main(int argc, char** argv) {
     while (!quit) {
 
         if (on_menu) {
-            exit(1);
-            // menuInput keypress = window.MenuInput();
-            // if (keypress == 4)
-            //     quit = true;
-            // on_menu = window.UpdateMenu(emulator.display, keypress);
-            // if (!on_menu) {
-            //     std::string rom = "games/";
-            //     rom.append(window.games[window.selected]);
-            //     rom.append(".ch8");
-            //     emulator.LoadROM(rom.c_str());
-            // }
+            menuInput keypress = window.MenuInput();
+            if (keypress == 4)
+                quit = true;
+            on_menu = window.UpdateMenu(emulator.display, keypress);
+            if (!on_menu) {
+                std::string rom = "games/";
+                rom.append(window.games[window.selected]);
+                rom.append(".ch8");
+                emulator.LoadROM(rom.c_str());
+            }
         } else {
             auto currentTime = std::chrono::high_resolution_clock::now();
             float dt = std::chrono::duration<float, std::chrono::milliseconds::period> (currentTime - lastCycleTime).count();
@@ -49,6 +52,6 @@ int main(int argc, char** argv) {
             }
         }
 
-    }
+    }*/
     return 0;
 }

@@ -34,5 +34,5 @@
 chip8
 build
 
-# temp
-SDL_DOWNLOADS
+/subprojects/*
+!/subprojects/*.wrap

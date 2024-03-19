@@ -1,9 +1,10 @@
 #include "window.h"
 // #include <SDL2/SDL_ttf.h>
+#include "SDL_ttf.h"
 #include <filesystem>
 
 namespace fs = std::filesystem;
-// TTF_Font* font = NULL;
+TTF_Font* font = NULL;
 
 Window::Window(char const* title, int width, int height) {
     // Initialize SDL2
@@ -14,7 +15,7 @@ Window::Window(char const* title, int width, int height) {
     win = SDL_CreateWindow(title, 0, 0, width, height, SDL_WINDOW_SHOWN);
     renderer = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED);
     SDL_SetWindowPosition(win, 50, 50);
-    /*
+
     // Initialize SDL2_TTF
     if (TTF_Init() == -1) {
         exit(1);
@@ -31,17 +32,17 @@ Window::Window(char const* title, int width, int height) {
 
         if (item.substr(item.size() - extention.size(), extention.size()) == extention)
             games.push_back(item.substr(6, item.size()-6-extention.size()));
-    }*/
+    }
 }
 
 Window::~Window() {
-    // TTF_CloseFont(font);
-    // TTF_Quit();
+    TTF_CloseFont(font);
+    TTF_Quit();
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(win);
     SDL_Quit();
 }
-/*
+
 bool Window::UpdateMenu(uint32_t* buffer, int keypress) {
     // Clean display
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
@@ -121,7 +122,7 @@ menuInput Window::MenuInput() {
         }
     }
     return keypress;
-}*/
+}
 void Window::Update(uint32_t* buffer) {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
