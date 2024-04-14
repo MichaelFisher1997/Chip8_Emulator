@@ -7,8 +7,6 @@ bool is_released{};
 uint8_t released_key{};
 
 int main(int argc, char** argv) {
-    std::cout << "test" << std::endl;
-    /*
     const char* file = argc > 1? argv[1] : NULL;
     int scale = argc > 2? std::stoi(argv[2]) : 10;
     int delay = argc > 3? std::stoi(argv[3]) : 2;
@@ -52,6 +50,6 @@ int main(int argc, char** argv) {
             }
         }
 
-    }*/
+    }
     return 0;
 }

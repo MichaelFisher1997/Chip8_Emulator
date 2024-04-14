@@ -33,6 +33,7 @@
 
 chip8
 build
+builddir
 
 /subprojects/*
 !/subprojects/*.wrap

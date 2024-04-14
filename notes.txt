@@ -1,0 +1,16 @@
+In case I need to remember commands, mostly for Meson
+Create build:
+$ meson setup builddir
+build:
+$ ninja 
+OR (in builddir)
+$ meson compile
+$ meson compile -C builddir
+
+CMake
+Create build (& folder):
+$ cmake -B build
+Create build (inside folder):
+$ cmake -S ..
+build:
+$ make
