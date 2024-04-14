@@ -14,7 +14,7 @@
 # Compiled Dynamic libraries
 *.so
 *.dylib
-# *.dll
+*.dll
 
 # Fortran module files
 *.mod
@@ -34,5 +34,5 @@
 chip8
 build
 
-# temp
-SDL_DOWNLOADS
+/subprojects/*
+!/subprojects/*.wrap

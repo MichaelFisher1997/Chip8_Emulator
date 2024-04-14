@@ -1,5 +1,6 @@
 #include "window.h"
-#include <SDL2/SDL_ttf.h>
+// #include <SDL2/SDL_ttf.h>
+#include "SDL_ttf.h"
 #include <filesystem>
 
 namespace fs = std::filesystem;
@@ -14,7 +15,7 @@ Window::Window(char const* title, int width, int height) {
     win = SDL_CreateWindow(title, 0, 0, width, height, SDL_WINDOW_SHOWN);
     renderer = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED);
     SDL_SetWindowPosition(win, 50, 50);
-    
+
     // Initialize SDL2_TTF
     if (TTF_Init() == -1) {
         exit(1);
