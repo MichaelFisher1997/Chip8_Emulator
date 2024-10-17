@@ -37,3 +37,7 @@ builddir
 
 /subprojects/*
 !/subprojects/*.wrap
+
+# Zig
+.zig-cache
+zig-out
