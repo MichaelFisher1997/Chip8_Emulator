@@ -34,4 +34,4 @@ You will need to make sure Zig is installed, which will be downloading the Zig .
 Simply run `zig build run` to run, or do `zig build` and move the .exe AND the .dll files to where a 'games/' folder is play on linux and windows!
 
 ## Mac
-yeah im not rich enough for this
+yeah im not yet rich enough for this
