@@ -14,21 +14,21 @@ pub fn build(b: *std.Build) void {
 
     exe.linkLibC();
     exe.linkLibCpp();
-    exe.linkSystemLibrary("libsystemd");
 
     // sdl2
     if (target.query.isNativeOs() and target.result.os.tag == .linux) {
-        exe.linkSystemLibrary("SDL2");
-        exe.linkSystemLibrary("SDL2_ttf");
-        exe.linkLibC();
+        exe.linkSystemLibrary("libsystemd");
     } else {
-        const sdl2_dep = b.dependency("zig_sdl", .{
-            .target = target,
-            .optimize = .ReleaseFast,
-        });
-        const sdl2_artifact = sdl2_dep.artifact("sdl2");
-        exe.linkLibrary(sdl2_artifact);
+        exe.addIncludePath(b.path("lib/SDL2/include"));
+        exe.addLibraryPath(b.path("lib/SDL2/lib/x64/"));
+        b.installBinFile("lib/SDL2/lib/x64/SDL2.dll", "SDL2.dll");
+
+        exe.addIncludePath(b.path("lib/SDL2_ttf/include/"));
+        exe.addLibraryPath(b.path("lib/SDL2_ttf/lib/x64/"));
+        b.installBinFile("lib/SDL2_ttf/lib/x64/SDL2_ttf.dll", "SDL2_ttf.dll");
     }
+    exe.linkSystemLibrary("SDL2");
+    exe.linkSystemLibrary("SDL2_ttf");
 
     b.installArtifact(exe);
 
