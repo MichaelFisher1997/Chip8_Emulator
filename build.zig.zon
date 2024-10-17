@@ -1,0 +1,22 @@
+.{
+    .name = "sdl-test",
+    .version = "0.0.0",
+    .dependencies = .{
+        .@"raylib-zig" = .{
+            .url = "https://github.com/Not-Nik/raylib-zig/archive/devel.tar.gz",
+            .hash = "12204597958bef7cdc168a32e0578b023e6b84adab455c479f92f07998cd46ba6fb0",
+        },
+        .SDL = .{
+            .url = "https://github.com/andrewrk/SDL/archive/3a8010729221c6e5d2596aba602a6f714cc44fd3.tar.gz",
+            .hash = "122029b1250b3cb390f409f0c0253344bc996698d0d241f3ef6496cf22446b1b0705",
+        },
+    },
+
+    .paths = .{
+        "LICENSE",
+        "README.md",
+        "build.zig",
+        "build.zig.zon",
+        "src",
+    }
+}
